@@ -21,17 +21,74 @@
             background: rgba(255,255,255,0.1);
             border-radius: 16px;
             backdrop-filter: blur(10px);
+            max-width: 400px;
         }
         h1 { margin-bottom: 10px; }
         p { opacity: 0.9; }
         .success { color: #4ade80; font-size: 48px; }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .manual {
+            display: none;
+            margin-top: 20px;
+        }
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="success">✓</div>
-        <h1>Authorization Successful</h1>
-        <p>You can close this window and return to the app.</p>
+        <h1>Authorization Successful!</h1>
+        <p id="status">Redirecting back to the app...</p>
+        <div class="spinner" id="spinner"></div>
+        
+        <div class="manual" id="manual">
+            <p>If the app didn't open automatically:</p>
+            <button onclick="tryRedirect()">Open App</button>
+            <p style="font-size: 12px; margin-top: 15px;">Or close this window and return to the app manually.</p>
+        </div>
     </div>
+    
+    <script>
+        // Build the custom scheme redirect URL with all query parameters
+        const params = window.location.search;
+        const customSchemeUrl = 'threads-content-engine://callback' + params;
+        
+        function tryRedirect() {
+            window.location.href = customSchemeUrl;
+        }
+        
+        // Auto-redirect after a short delay
+        setTimeout(function() {
+            tryRedirect();
+            
+            // Show manual option after redirect attempt
+            setTimeout(function() {
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('status').textContent = 'Click below if the app didn\'t open:';
+                document.getElementById('manual').style.display = 'block';
+            }, 1500);
+        }, 500);
+    </script>
 </body>
 </html>
